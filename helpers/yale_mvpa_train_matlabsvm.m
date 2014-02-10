@@ -1,4 +1,4 @@
-function svmstruct = train_matlabsvm_mrj( trainpats, traintargs, args )
+function svmstruct = yale_mvpa_train_matlabsvm( trainpats, traintargs, args )
 
 % trainpats is nfeatures x ntrials (with multi-class, includes trials from all classes)
 % traintargs is nclasses x ntrials (logical matrix)
