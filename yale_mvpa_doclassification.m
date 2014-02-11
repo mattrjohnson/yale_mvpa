@@ -70,6 +70,7 @@ for i = 1:nits
     all_testtargs =                                         acts;
     
     for k = 1:n_folds
+        fprintf('- fold: %d\n', k);
         class_struct =                                      feval( yale_mvpa_config.classifier.trainfunc, trainpats{k}, traintargs{k}, yale_mvpa_config.classifier.args );
         [acts(:,:,k), class_struct] =                       feval( yale_mvpa_config.classifier.testfunc,  testpats{k},  testtargs{k},  class_struct ); %#ok<NASGU>
         all_testtargs(:,:,k) =                              testtargs{k};
