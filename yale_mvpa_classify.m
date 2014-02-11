@@ -4,7 +4,6 @@ function yale_mvpa_classify
 % CONFIGURATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-yale_mvpa_config.paths =             	yale_mvpa_config_paths;
 yale_mvpa_config.general =           	yale_mvpa_config_general;
 yale_mvpa_config.files =              	yale_mvpa_config_files;
 % yale_mvpa_config.erps =              	mrj_eeg_classify_config_erps;
@@ -31,11 +30,11 @@ disp(['- ' yale_mvpa_toolbox_path]);
 addpath(yale_mvpa_toolbox_path);
 disp(['- ' fullfile(yale_mvpa_toolbox_path,'helpers')]);
 addpath(yale_mvpa_toolbox_path,'helpers');
-if ~isempty( yale_mvpa_config.paths.path_function )
+if ~isempty( yale_mvpa_config.general.path_function )
     try
-        eval( yale_mvpa_config.paths.path_function );
+        eval( yale_mvpa_config.general.path_function );
     catch %#ok<CTCH>
-        error( 'Could not evaluate paths.path_function!' );
+        error( 'Could not evaluate general.path_function!' );
     end
 end
 

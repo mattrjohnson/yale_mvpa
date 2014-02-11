@@ -17,5 +17,11 @@ general.try_parallel =                  0;                  % Choices: 0 or 1
                                                             % If set to 1, will try to do processing in parallel (using Matlab Parallel Computing
                                                             %  Toolbox) wherever possible.
 
+general.path_function =                 '';                 % String describing a function to be eval'd in order to add any appropriate paths
+                                                            %  (or do any other initialization/setup). Can be anything you'd enter on the Matlab
+                                                            %  prompt. The toolbox will take care of its own paths but you may want this for other
+                                                            %  home-grown functions and so forth. Leave as an empty string if you don't need it.
+
+
 % Still to come: Option to do classification separately by "channel" (fMRI: == ROI?)
 % - this option will be mutually exclusive with by_timepoint -- they can't both be used
