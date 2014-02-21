@@ -6,6 +6,10 @@ if yale_mvpa_config.files.load_preprocessed_data
         error('Cannot set both files.load_preprocessed_data and files.save_preprocessed_data to 1');
     end
     
+    if yale_mvpa_config.files.load_data_via_script
+        error('Cannot set both files.load_preprocessed_data and files.load_data_via_script to 1');
+    end
+    
     loaded_data = load( yale_mvpa_config.files.load_preprocessed_data_fname );
     if ~isfield(loaded_data,'subs')
         error(['Load from ' yale_mvpa_config.files.load_preprocessed_data_fname ' failed; ''subs'' variable not found.']);
@@ -30,7 +34,13 @@ if yale_mvpa_config.files.load_preprocessed_data
         yale_mvpa_config.freqs = loaded_data.freqs;
     end
     clear loaded_data; %save some memory, maybe
-elseif strcmp( yale_mvpa_config.general.modality, 'eeg' )
+elseif yale_mvpa_config.files.load_data_via_script
+    try
+        subs = eval(yale_mvpa_config.files.load_data_via_script_mfile);
+    catch %#ok<CTCH>
+        error('Loading data via your specified script failed. Either yale_mvpa_config.files.load_data_via_script_mfile is empty, or the file could not be found, or it did not return any output.');
+    end
+elseif strcmp( yale_mvpa_config.general.modality, 'eeg' ) %deprecate later and fold into yale_mvpa_config.files.load_data_via_script
     [subs, yale_mvpa_config] = yale_mvpa_eeg_preprocess( yale_mvpa_config );
 else
     error('No method of fMRI preprocessing implemented yet! Either change your modality setting or load data from a file for now.');

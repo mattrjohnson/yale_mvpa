@@ -1,15 +1,17 @@
-function yale_mvpa_classify
+function yale_mvpa_classify( yale_mvpa_config )
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % CONFIGURATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-yale_mvpa_config.general =           	yale_mvpa_config_general;
-yale_mvpa_config.files =              	yale_mvpa_config_files;
-% yale_mvpa_config.erps =              	mrj_eeg_classify_config_erps;
-% yale_mvpa_config.freqs =               	mrj_eeg_classify_config_freqs;
-% yale_mvpa_config.feature_selection =   	yale_mvpa_config_feature_selection;
-yale_mvpa_config.classifier =        	yale_mvpa_config_classifier;
+if nargin<1 || isempty( yale_mvpa_config )
+    yale_mvpa_config.general =           	yale_mvpa_config_general;
+    yale_mvpa_config.files =              	yale_mvpa_config_files;
+    % yale_mvpa_config.erps =              	mrj_eeg_classify_config_erps;
+    % yale_mvpa_config.freqs =               	mrj_eeg_classify_config_freqs;
+    % yale_mvpa_config.feature_selection =   	yale_mvpa_config_feature_selection;
+    yale_mvpa_config.classifier =        	yale_mvpa_config_classifier;
+end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

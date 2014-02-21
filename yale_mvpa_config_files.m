@@ -43,6 +43,21 @@ files.load_preprocessed_data_fname =    '/Users/matt/Desktop/docs/data/Img_Perc/
                                                             %  here if the above option (files.load_preprocessed_data) is set to 1. Leave empty 
                                                             %  if the option above is set to 0.
 
+files.load_data_via_script =            0;                  % Choices: 0 or 1
+                                                            % If set to 1, will run a script you specify. (Update more later. Including update
+                                                            %  descriptions for above options that are mutually incompatible with this.) OK to
+                                                            %  co-occur with save_results parameter below; e.g. if your data-loading function is
+                                                            %  some kind of pre-processing function. (In a later update: Change so that the Yale
+                                                            %  EEG preprocessing scripts fold into this, and make either load_data_via_script or
+                                                            %  load_preprocessed_data mandatory.)
+
+files.load_data_via_script_mfile =      '';                 % String specifying the Matlab M-file to run if files.load_data_via_script is set to
+                                                            %  1. Could be an absolute path, or could be anything on the Matlab path (including
+                                                            %  the yale_mvpa directory and any paths added by the path function in
+                                                            %  yale_mvpa_config_general.m). The M-file specified should include a function that
+                                                            %  returns one output, which should match the 'subs' data structure used everywhere
+                                                            %  else (add more detail later).
+
 files.save_results =                    0;                  % Choices: 0 or 1
                                                             % If set to 1, will save the results of MVPA in a file you specify using the 
                                                             %  files.save_results_fname option below. The exact format will depend on the type
