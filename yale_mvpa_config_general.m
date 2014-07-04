@@ -22,6 +22,12 @@ general.path_function =                 '';                 % String describing 
                                                             %  prompt. The toolbox will take care of its own paths but you may want this for other
                                                             %  home-grown functions and so forth. Leave as an empty string if you don't need it.
 
+general.results_verbose =               1;                  % Choices: 0 or 1
+                                                            % If set to 1 (the default), will print out results to the Matlab command window. If
+                                                            %  set to 0, results aren't printed at all, so hopefully you're saving them somehow
+                                                            %  (either to a file or catching the return value of yale_mvpa_classify)... or else
+                                                            %  there isn't much point to having run the classification, is there?
+
 
 % Still to come: Option to do classification separately by "channel" (fMRI: == ROI?)
 % - this option will be mutually exclusive with by_timepoint -- they can't both be used

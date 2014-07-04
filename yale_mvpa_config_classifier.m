@@ -45,6 +45,23 @@ classifier.shuffle_data_randomly =      0;                  % Choices: 0, 1, or 
                                                             %  usual, but when the time to classify comes, the algorithm will just stick in 
                                                             %  completely randomly generated data of the same size.
 
+classifier.cheat =                      0;                  % Choices: 0 or 1
+                                                            % Should be left at 0 most of the time, because this option will replace your real
+                                                            %  data with fake data that should yield high-accuracy classification, to test your
+                                                            %  algorithms. Be careful with this one and if you change it to 1, remember to 
+                                                            %  change it back before performing real analyses! (Note: mutually incompatible with
+                                                            %  classifier.shuffle_data_randomly above, because this option is basically the
+                                                            %  opposite of that.
+
+classifier.cheat_noise_factor =         1;                  % If classifier.cheat is set to 1, this is a multiplier indicating how much noise to
+                                                            %  add to the fake data. 0 would indicate no noise, i.e. the data should be perfectly
+                                                            %  classifiable with no chance of error (although perhaps some classification 
+                                                            %  algorithms might not like overly perfect input data?). 1 would indicate a maximum
+                                                            %  noise magnitude equal to the difference between conditions (for a given feature/
+                                                            %  trial). Useful values may depend on how much data you're putting in and how noise-
+                                                            %  tolerant your classification algorithm is (and this option might be useful for
+                                                            %  testing that), but think small, positive numbers, i.e., 1-10ish?
+
 classifier.mean_treatment =             3;                  % Choices: 0, 1, 2, or 3
                                                             % Specifies what to do about the mean signal across features for each trial during
                                                             %  classification. If set to 0, there will be no alteration from the original data.

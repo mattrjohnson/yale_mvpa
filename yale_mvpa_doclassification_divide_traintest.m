@@ -14,7 +14,7 @@ if ischar(yale_mvpa_config.classifier.kfold) && strcmp(yale_mvpa_config.classifi
     n_testtrials_percond =                                  n_trials_percond_perrun; %redundant in 'runs' case, but matches what we'll do in other cases
     
     % figure out traintargs and testtargs
-    %  n.b.: in this case ('runs'), both traintargs and testtargs are the same across all runs, but that may not always be the case
+    %  n.b.: in this case ('runs'), both traintargs and testtargs are the same across all runs, but that may not always be the case (?)
     testtargs_tmp =                                         kron( eye(n_conds), ones(1,n_testtrials_percond) );
     traintargs_tmp =                                        nan( n_conds,n_trials_perrun,(n_runs-1) );
     for i = 1:(n_runs-1)
@@ -85,16 +85,69 @@ elseif yale_mvpa_config.classifier.separate_traintest == 1
     testtargs =                                             { testtargs_tmp };
     trainpats =                                             { trainpats_tmp };
     testpats =                                              { testpats_tmp };
+elseif isnumeric(yale_mvpa_config.classifier.kfold) && ~mod(yale_mvpa_config.classifier.kfold,1) && (yale_mvpa_config.classifier.kfold>1)
+    % divide up into K folds
+    n_folds =                                               yale_mvpa_config.classifier.kfold;
+    n_conds =                                               size(this_sub.classifier_data,1);
+    n_features =                                            size(this_sub.classifier_data{1},1);
+    n_trials_percond =                                      zeros(n_conds,1);
+    for i = 1:n_conds
+        n_trials_percond(i) =                               size(this_sub.classifier_data{i},2);
+    end
+    min_n_trials_percond =                                  min(n_trials_percond);
+    n_testtrials_percond =                                  floor(min_n_trials_percond ./ n_folds);
+    if n_testtrials_percond<1
+        error('Not enough trials for k-fold cross validation.');
+    end
+    n_traintrials_percond =                                 n_testtrials_percond * (n_folds-1);
+    
+    % figure out traintargs and testtargs
+    %  n.b.: in this case, both traintargs and testtargs are the same across all folds, but that may not always be the case (?)
+    testtargs_tmp =                                         kron( eye(n_conds), ones(1,n_testtrials_percond) );
+    traintargs_tmp =                                        kron( eye(n_conds), ones(1,n_traintrials_percond) );
+    traintargs =                                            cell(n_folds,1);
+    testtargs =                                             cell(n_folds,1);
+    for i = 1:n_folds
+        traintargs{i} =                                     traintargs_tmp;
+        testtargs{i} =                                      testtargs_tmp;
+    end
+    
+    % first, reshape the data a bit so it's easier to deal with
+    classifier_data_reshaped =                              cell(n_conds,1);
+    for i = 1:n_conds
+        classifier_data_temp =                              this_sub.classifier_data{i};
+        if yale_mvpa_config.classifier.cheat %very temporary! only for internal testing
+%             classifier_data_temp = ones(size(classifier_data_temp)) .* i + rand(size(classifier_data_temp)) .* yale_mvpa_config.classifier.cheat_noise_factor;
+            classifier_data_temp = ones(600,size(classifier_data_temp,2)) .* i + rand(600,size(classifier_data_temp,2)) .* yale_mvpa_config.classifier.cheat_noise_factor;
+            n_features = 600;
+        end
+        trial_inds =                                        randperm(n_trials_percond(i));
+        classifier_data_temp =                              classifier_data_temp(:,trial_inds(1:(n_testtrials_percond*n_folds)));
+        classifier_data_reshaped{i} =                       classifier_data_temp; %still features x trials, but randomized & truncated to right size
+    end
+    
+    % now, loop through runs and make our trainpats/testpats
+    trainpats =                                             cell(n_folds,1);
+    testpats =                                              cell(n_folds,1);
+    for i = 1:n_folds
+        train_folds =                                       setdiff(1:n_folds,i);
+        trainpats_tmp =                                     nan(n_features, n_traintrials_percond, n_conds);
+        testpats_tmp =                                      nan(n_features, n_testtrials_percond, n_conds );
+        
+        for j = 1:n_conds
+            classifier_data_temp =                          classifier_data_reshaped{j};
+            classifier_data_temp =                          reshape(classifier_data_temp, [n_features n_folds n_testtrials_percond]); %now features x folds x trials
+            testpats_tmp(:,:,j) =                           squeeze(classifier_data_temp(:,i,:));
+            classifier_data_temp =                          classifier_data_temp(:,train_folds,:);
+            trainpats_tmp(:,:,j) =                          reshape(classifier_data_temp, [n_features n_traintrials_percond]);
+        end
+        
+        trainpats{i} =                                      reshape(trainpats_tmp, [n_features n_traintrials_percond * n_conds]);
+        testpats{i}  =                                      reshape(testpats_tmp,  [n_features n_testtrials_percond  * n_conds]);
+    end
 else
     error('Not supported yet');
 end
-
-
-
-
-
-
-
 
 
 

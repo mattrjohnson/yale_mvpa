@@ -7,8 +7,7 @@ auc_out =                               zeros( n_conds, 1 );
 acts =                                  results.acts;
 testtargs =                             results.testtargs;
     
-for j=1:n_conds
-    [tp, fp] =                          roc( testtargs(j,:)', acts(j,:)' );
-    auc_out(j) =                        auroc( tp, fp );
+for i=1:n_conds
+    [tp, fp] =                          roc( testtargs(i,:)', acts(i,:)' );
+    auc_out(i) =                        auroc( tp, fp );
 end
-

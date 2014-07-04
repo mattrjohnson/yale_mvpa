@@ -18,7 +18,7 @@ n_subs =                                length( results );
 
 n_timepoints_or_channels =              size( results{1}, 1 );
 nits =                                  size( results{1}, 2 );
-if nits>1 || n_timepoints_or_channels>1
+if n_timepoints_or_channels>1
     error('Not supported yet!');
 end
 
@@ -31,31 +31,42 @@ auc_means =                             zeros(n_subs, 1);
 % do some calculations on results
 for i=1:n_subs
 %     for j=1:n_timepoints
-    results{i}(1).wta =                 yale_mvpa_results_wta( results{i}(1) );
-    results{i}(1).tiedrank =            yale_mvpa_results_tiedrank( results{i}(1) );
-    results{i}(1).auc =                 yale_mvpa_results_auc( results{i}(1) );
+    for j = 1:nits
+        results{i}(j).wta =                 yale_mvpa_results_wta( results{i}(j) );
+        results{i}(j).tiedrank =            yale_mvpa_results_tiedrank( results{i}(j) );
+        results{i}(j).auc =                 yale_mvpa_results_auc( results{i}(j) );
 
-    wta_means(i) =                      mean(mean(squeeze(results{i}(1).wta)));
-    tiedrank_means(i) =                 mean(mean(squeeze(results{i}(1).tiedrank)));
-    auc_means(i) =                      mean(mean(squeeze(results{i}(1).auc)));
+        wta_means(i,j) =                    mean(mean(squeeze(results{i}(j).wta)));
+        tiedrank_means(i,j) =               mean(mean(squeeze(results{i}(j).tiedrank)));
+        auc_means(i,j) =                    mean(mean(squeeze(results{i}(j).auc)));
+        
+        results{i}(j).wta_mean =            wta_means(i,j);
+        results{i}(j).tiedrank_mean =       tiedrank_means(i,j);
+        results{i}(j).auc_mean =            auc_means(i,j);
+    end
 %     end
 end
 
-disp(' '); disp(' '); disp(' ');
-disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%');
-disp('% RESULTS');
-disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%');
-disp(' ');
-disp('WTA:');
-disp(wta_means);
-disp(' ');
-disp('Tiedrank:');
-disp(tiedrank_means);
-disp(' ');
-disp('AUC:');
-disp(auc_means);
-disp(' ');
+wta_means = mean(wta_means,2);
+tiedrank_means = mean(tiedrank_means,2);
+auc_means = mean(auc_means,2);
 
+if yale_mvpa_config.general.results_verbose
+    disp(' '); disp(' '); disp(' ');
+    disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%');
+    disp('% RESULTS');
+    disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%');
+    disp(' ');
+    disp('WTA:');
+    disp(wta_means);
+    disp(' ');
+    disp('Tiedrank:');
+    disp(tiedrank_means);
+    disp(' ');
+    disp('AUC:');
+    disp(auc_means);
+    disp(' ');
+end
 
 
 % %-----------------------------------------------------------------

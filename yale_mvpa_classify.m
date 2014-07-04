@@ -1,4 +1,4 @@
-function yale_mvpa_classify( yale_mvpa_config )
+function results = yale_mvpa_classify( yale_mvpa_config )
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % CONFIGURATION
@@ -31,7 +31,7 @@ disp('Adding directories to path (just for the current Matlab session):');
 disp(['- ' yale_mvpa_toolbox_path]);
 addpath(yale_mvpa_toolbox_path);
 disp(['- ' fullfile(yale_mvpa_toolbox_path,'helpers')]);
-addpath(yale_mvpa_toolbox_path,'helpers');
+addpath(fullfile(yale_mvpa_toolbox_path,'helpers'));
 if ~isempty( yale_mvpa_config.general.path_function )
     try
         eval( yale_mvpa_config.general.path_function );
@@ -74,7 +74,7 @@ cd(yale_mvpa_config.owd);
 
 %need to modify classification functions to define results functions
 % all valid results-processing (and displaying) functions should take 3 parameters and return 1
-results = feval(yale_mvpa_config.results.function, yale_mvpa_config, subs, results ); %#ok<NASGU>
+results = feval(yale_mvpa_config.results.function, yale_mvpa_config, subs, results );
 
 if yale_mvpa_config.files.save_results
     do_save = yale_mvpa_check_save_ok( yale_mvpa_config.files.save_results_fname );
@@ -88,5 +88,6 @@ toc(yale_mvpa_config.start_time.tictoc);
 
 
 
-%later on: add the ability to pass in a directory with configuration files, put the default configuration files in their own
-% sub-directory, and only add it to the path if the user does not pass in a directory with their own config files.
+%later on: maybe add the ability to pass in a directory with configuration files, put the default configuration files in their own
+% sub-directory, and only add it to the path if the user does not pass in a directory with their own config files. (although maybe 
+% this has been obviated by the change of allowing one to pass in the yale_mvpa_config structure)

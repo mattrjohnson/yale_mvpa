@@ -1,12 +1,22 @@
 function [yale_mvpa_config, subs, results] = yale_mvpa_doclassification( yale_mvpa_config, subs )
 
-if ~ischar(yale_mvpa_config.classifier.kfold) || strcmp(yale_mvpa_config.classifier.kfold,'subs')
+if ischar(yale_mvpa_config.classifier.kfold) && (~isempty(yale_mvpa_config.classifier.kfold)) && (~strcmp(yale_mvpa_config.classifier.kfold,'runs'))
     error('not supported yet');
 end
 
-if ~isempty(yale_mvpa_config.classifier.nits) && yale_mvpa_config.classifier.nits ~= 0
-    error('not supported yet');
+if isnumeric(yale_mvpa_config.classifier.kfold)
+    if mod(yale_mvpa_config.classifier.kfold,1) || ~(yale_mvpa_config.classifier.kfold > 1)
+        error('not supported yet, or weird numeric value for yale_mvpa_config.classifier.kfold');
+    end
 end
+
+%there could be other bad combinations of cases for kfold... maybe check for them here at some later point, although
+% hopefully they should be caught by the catch-all error case in yale_mvpa_doclassification_divide_traintest
+
+% if ~isempty(yale_mvpa_config.classifier.nits) && yale_mvpa_config.classifier.nits ~= 0
+%     error('not supported yet');
+% end
+% not sure if we need to do much else to enable multiple-iterations support, but I guess we'll find out...
 
 if yale_mvpa_config.classifier.shuffle_data_randomly ~= 0
     error('not supported yet');
@@ -35,12 +45,14 @@ end
 %-------------------------------------------------------------------------------------
 function results = yale_mvpa_doclassification_onesub( subs, yale_mvpa_config, subnum )
 
-nits =                                                      1; %at some point, change to reflect yale_mvpa_config.classifier.nits
+nits =                                                      yale_mvpa_config.classifier.nits;
 results =                                                   struct('n_features',cell(1,nits),'acts',cell(1,nits),'testtargs',cell(1,nits));
 
+fprintf('Subject %.3d: ', subnum);
 for i = 1:nits
     % display update
-    fprintf('Subject %d, iteration %d of %d\n', subnum, i, nits);
+    update1_str = sprintf('  iteration:%.4d  of:%.4d', i, nits);
+    fprintf(update1_str);
     
     [trainpats, traintargs, testpats, testtargs] =          yale_mvpa_doclassification_divide_traintest( subs, yale_mvpa_config, subnum );
     
@@ -63,6 +75,10 @@ for i = 1:nits
     
     %some form of feature selection would probably happen here
     
+%     if yale_mvpa_config.classifier.cheat %add in shuffle data randomly options around here later
+%         
+%     end
+    
     n_folds =                                               length(trainpats); %folds, runs, what-have-you
     n_conds =                                               size(traintargs{1},1); %could probably move out of loop, but meh
     n_test_trials_per_fold =                                size(testtargs{1},2); %assume for now it is the same for all runs/folds
@@ -70,10 +86,20 @@ for i = 1:nits
     all_testtargs =                                         acts;
     
     for k = 1:n_folds
-        fprintf('- fold: %d\n', k);
+        update2_str = sprintf('  fold:%.3d', k);
+        fprintf(update2_str);
         class_struct =                                      feval( yale_mvpa_config.classifier.trainfunc, trainpats{k}, traintargs{k}, yale_mvpa_config.classifier.args );
         [acts(:,:,k), class_struct] =                       feval( yale_mvpa_config.classifier.testfunc,  testpats{k},  testtargs{k},  class_struct ); %#ok<NASGU>
         all_testtargs(:,:,k) =                              testtargs{k};
+        if (i ~= nits) || (k ~= n_folds)
+            fprintf(repmat('\b',1,length(update2_str)));
+        end
+    end
+    
+    if i == nits
+        fprintf('\n');
+    else
+        fprintf(repmat('\b',1,length(update1_str)));
     end
     
     results(i).n_features =                                 size(trainpats{1},1);
