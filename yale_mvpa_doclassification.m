@@ -46,6 +46,12 @@ end
 function results = yale_mvpa_doclassification_onesub( subs, yale_mvpa_config, subnum )
 
 nits =                                                      yale_mvpa_config.classifier.nits;
+if isempty(nits) || (isnumeric(nits) && isscalar(nits) && nits==0)
+    nits = 1;
+elseif ~isnumeric(nits) || ~isscalar(nits) || nits<1 || mod(nits,1)
+    error('Seemingly invalid value of yale_mvpa_config.classifier.nits!');
+end
+
 results =                                                   struct('n_features',cell(1,nits),'acts',cell(1,nits),'testtargs',cell(1,nits));
 
 fprintf('Subject %.3d: ', subnum);

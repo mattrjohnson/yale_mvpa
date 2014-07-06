@@ -35,6 +35,10 @@ classifier.nits =                       '';                 % Choices: 0/empty o
                                                             %  directly below), then you can (and probably should) set this value to an integer
                                                             %  larger than 0, so that you can try multiple randomly generated datasets.
                                                             
+                                                            % EDIT: Actually, it is not currently true that nits will be ignored, so need to 
+                                                            %  rephrase that above. Although we have just made the fix for 0/empty so that is
+                                                            %  OK to specify
+                                                            
 classifier.shuffle_data_randomly =      0;                  % Choices: 0, 1, or 2
                                                             % Should be left at 0 most of the time, which indicates that data will not be 
                                                             %  shuffled; normally this is what you want to do if you want to get actual above-
