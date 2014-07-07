@@ -32,13 +32,23 @@ auc_means =                             zeros(n_subs, 1);
 for i=1:n_subs
 %     for j=1:n_timepoints
     for j = 1:nits
-        results{i}(j).wta =                 yale_mvpa_results_wta( results{i}(j) );
-        results{i}(j).tiedrank =            yale_mvpa_results_tiedrank( results{i}(j) );
-        results{i}(j).auc =                 yale_mvpa_results_auc( results{i}(j) );
+        if isempty(results{i}(j).testtargs)     %handle iterations with errors on classification
+            results{i}(j).wta =                 [];
+            results{i}(j).tiedrank =            [];
+            results{i}(j).auc =                 [];
 
-        wta_means(i,j) =                    mean(mean(squeeze(results{i}(j).wta)));
-        tiedrank_means(i,j) =               mean(mean(squeeze(results{i}(j).tiedrank)));
-        auc_means(i,j) =                    mean(mean(squeeze(results{i}(j).auc)));
+            wta_means(i,j) =                    NaN;
+            tiedrank_means(i,j) =               NaN;
+            auc_means(i,j) =                    NaN;
+        else
+            results{i}(j).wta =                 yale_mvpa_results_wta( results{i}(j) );
+            results{i}(j).tiedrank =            yale_mvpa_results_tiedrank( results{i}(j) );
+            results{i}(j).auc =                 yale_mvpa_results_auc( results{i}(j) );
+
+            wta_means(i,j) =                    mean(mean(squeeze(results{i}(j).wta)));
+            tiedrank_means(i,j) =               mean(mean(squeeze(results{i}(j).tiedrank)));
+            auc_means(i,j) =                    mean(mean(squeeze(results{i}(j).auc)));
+        end
         
         results{i}(j).wta_mean =            wta_means(i,j);
         results{i}(j).tiedrank_mean =       tiedrank_means(i,j);

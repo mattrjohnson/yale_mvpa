@@ -90,25 +90,38 @@ for i = 1:nits
     n_test_trials_per_fold =                                size(testtargs{1},2); %assume for now it is the same for all runs/folds
     acts =                                                  nan(n_conds,n_test_trials_per_fold,n_folds);
     all_testtargs =                                         acts;
+    classification_error_occurred =                         false;
     
     for k = 1:n_folds
         update2_str = sprintf('  fold:%.3d', k);
         fprintf(update2_str);
-        class_struct =                                      feval( yale_mvpa_config.classifier.trainfunc, trainpats{k}, traintargs{k}, yale_mvpa_config.classifier.args );
-        [acts(:,:,k), class_struct] =                       feval( yale_mvpa_config.classifier.testfunc,  testpats{k},  testtargs{k},  class_struct ); %#ok<NASGU>
+        try
+            class_struct =                                      feval( yale_mvpa_config.classifier.trainfunc, trainpats{k}, traintargs{k}, yale_mvpa_config.classifier.args );
+            [acts(:,:,k), class_struct] =                       feval( yale_mvpa_config.classifier.testfunc,  testpats{k},  testtargs{k},  class_struct ); %#ok<NASGU>
+        catch %#ok<CTCH>
+            classification_error_occurred =                 true;
+            break;
+        end
         all_testtargs(:,:,k) =                              testtargs{k};
         if (i ~= nits) || (k ~= n_folds)
             fprintf(repmat('\b',1,length(update2_str)));
         end
     end
     
-    if i == nits
+    if i == nits || classification_error_occurred
         fprintf('\n');
     else
         fprintf(repmat('\b',1,length(update1_str)));
     end
     
-    results(i).n_features =                                 size(trainpats{1},1);
-    results(i).acts =                                       reshape(acts,[n_conds numel(acts)/n_conds]);
-    results(i).testtargs =                                  reshape(all_testtargs,[n_conds numel(all_testtargs)/n_conds]);
+    if classification_error_occurred
+        fprintf('Classification error! Possible non-convergence? Results for this iteration set to NaN/empty.\n');
+        results(i).n_features =                                 NaN;
+        results(i).acts =                                       [];
+        results(i).testtargs =                                  [];
+    else
+        results(i).n_features =                                 size(trainpats{1},1);
+        results(i).acts =                                       reshape(acts,[n_conds numel(acts)/n_conds]);
+        results(i).testtargs =                                  reshape(all_testtargs,[n_conds numel(all_testtargs)/n_conds]);
+    end
 end
