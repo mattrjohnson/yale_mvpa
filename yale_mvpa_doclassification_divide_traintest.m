@@ -145,6 +145,8 @@ elseif isnumeric(yale_mvpa_config.classifier.kfold) && ~mod(yale_mvpa_config.cla
         trainpats{i} =                                      reshape(trainpats_tmp, [n_features n_traintrials_percond * n_conds]);
         testpats{i}  =                                      reshape(testpats_tmp,  [n_features n_testtrials_percond  * n_conds]);
     end
+elseif ischar(yale_mvpa_config.classifier.kfold) && strcmp(yale_mvpa_config.classifier.kfold,'custom')
+    [trainpats, traintargs, testpats, testtargs] = feval(yale_mvpa_config.classifier.kfold_custom, this_sub, yale_mvpa_config);
 else
     error('Not supported yet');
 end

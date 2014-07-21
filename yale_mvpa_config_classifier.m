@@ -18,6 +18,22 @@ classifier.kfold =                      'runs';             % Choices: Empty, 'r
                                                             %  approach. If set to an integer (e.g. 5), then will do that fold cross-validation
                                                             %  (e.g. 5-fold). In the integer case, the data will be divvied up randomly, so you
                                                             %  will likely want to run multiple iterations (see classifier.nits below).
+                                                            % NEW OPTION 2014-07-21: Will need to elaborate documentation more later, but with
+                                                            %  'custom' you can now specify a custom dividing-up-your-data function via the
+                                                            %  classifier.kfold_custom option below. Still in testing...
+
+classifier.kfold_custom =               '';                 % String specifying the Matlab M-file to run if classifier.kfold is set to 'custom'.
+                                                            %  Should be the name of an M-file (without the actual .m extension) that is located
+                                                            %  somewhere on the Matlab path (including the yale_mvpa directory and any paths 
+                                                            %  added by the path function in yale_mvpa_config_general.m). The M-file specified 
+                                                            %  should include a function that takes in two arguments -- a 'sub' structure (one 
+                                                            %  member of the 'subs' structure used elsewhere (document this more extensively 
+                                                            %  later) and the yale_mvpa_config structure (note that you could embed parameters 
+                                                            %  in custom subfields of this structure if you need to, as long as the field names 
+                                                            %  don't conflict with the built-in fields). It should return four outputs, which 
+                                                            %  should match the 'trainpats', 'traintargs', 'testpats', and 'testtargs' outputs 
+                                                            %  returned by the built-in yale_mvpa_doclassification_divide_traintest function 
+                                                            %  (add more detail on exactly how these are formatted later).
                                                             
 classifier.nits =                       '';                 % Choices: 0/empty or a positive integer
                                                             % This option only applies if you enter an integer for classifier.kfold above. It
@@ -37,7 +53,8 @@ classifier.nits =                       '';                 % Choices: 0/empty o
                                                             
                                                             % EDIT: Actually, it is not currently true that nits will be ignored, so need to 
                                                             %  rephrase that above. Although we have just made the fix for 0/empty so that is
-                                                            %  OK to specify
+                                                            %  OK to specify. Also note that nits may be a useful option if using a kfold_custom
+                                                            %  script.
                                                             
 classifier.shuffle_data_randomly =      0;                  % Choices: 0, 1, or 2
                                                             % Should be left at 0 most of the time, which indicates that data will not be 

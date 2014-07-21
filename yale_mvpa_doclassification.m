@@ -1,7 +1,13 @@
 function [yale_mvpa_config, subs, results] = yale_mvpa_doclassification( yale_mvpa_config, subs )
 
 if ischar(yale_mvpa_config.classifier.kfold) && (~isempty(yale_mvpa_config.classifier.kfold)) && (~strcmp(yale_mvpa_config.classifier.kfold,'runs'))
-    error('not supported yet');
+    if strcmp(yale_mvpa_config.classifier.kfold,'custom')
+        if ~isfield (yale_mvpa_config.classifier, 'kfold_custom') || isempty(yale_mvpa_config.classifier.kfold_custom)
+            error('You specified that you are using a custom function in yale_mvpa_config.classifier.kfold but no custom data-dividing function is specified!');
+        end
+    else
+        error('not supported yet');
+    end
 end
 
 if isnumeric(yale_mvpa_config.classifier.kfold)
